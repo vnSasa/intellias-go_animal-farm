@@ -29,153 +29,147 @@ type farmController interface {
 	fmt.Stringer
 }
 
-type Dog struct {
+type dog struct {
 	animalType string
 	weight int
 	needingFood int
 	isEdible bool
 }
 
-func (dog Dog) foodNeeding() int {
-	return dog.weight * dog.needingFood
+func (d dog) foodNeeding() int {
+	return d.weight * d.needingFood
 }
 
-func (dog Dog) String() string {
-	return fmt.Sprintf("The weight of the %v is %vkg. ", dog.animalType, dog.weight)
+func (d dog) String() string {
+	return fmt.Sprintf("The weight of the %v is %vkg. ", d.animalType, d.weight)
 }
 
-func (dog Dog) animalTypeGetter() string {
-	return dog.animalType
+func (d dog) animalTypeGetter() string {
+	return d.animalType
 }
 
-func (dog Dog) minWeightGetter() int {
+func (d dog) minWeightGetter() int {
 	return dogMinWeight
 }
 
-func (dog Dog) animalWeightGetter() int {
-	return dog.weight
+func (d dog) animalWeightGetter() int {
+	return d.weight
 }
 
-func (dog Dog) isAnimalEdible() bool {
+func (d dog) isAnimalEdible() bool {
 	return isDogEdible
 }
 
-func (dog Dog) edibleStatus() bool {
-	return dog.isEdible
+func (d dog) edibleStatus() bool {
+	return d.isEdible
 }
 
-type Cat struct {
+type cat struct {
 	animalType string
 	weight int
 	needingFood int
 	isEdible bool
 }
 
-func (cat Cat) foodNeeding() int {
-	return cat.weight * cat.needingFood
+func (c cat) foodNeeding() int {
+	return c.weight * c.needingFood
 }
 
-func (cat Cat) String() string {
-	return fmt.Sprintf("The weight of the %v is %vkg. ", cat.animalType, cat.weight)
+func (c cat) String() string {
+	return fmt.Sprintf("The weight of the %v is %vkg. ", c.animalType, c.weight)
 }
 
-func (cat Cat) animalTypeGetter() string {
-	return cat.animalType
+func (c cat) animalTypeGetter() string {
+	return c.animalType
 }
 
-func (cat Cat) minWeightGetter() int {
+func (c cat) minWeightGetter() int {
 	return catMinWeight
 }
 
-func (cat Cat) animalWeightGetter() int {
-	return cat.weight
+func (c cat) animalWeightGetter() int {
+	return c.weight
 }
 
-func (cat Cat) isAnimalEdible() bool {
+func (c cat) isAnimalEdible() bool {
 	return isCatEdible
 }
 
-func (cat Cat) edibleStatus() bool {
-	return cat.isEdible
+func (c cat) edibleStatus() bool {
+	return c.isEdible
 }
 
-type Cow struct {
+type cow struct {
 	animalType string
 	weight int
 	needingFood int
 	isEdible bool
 }
 
-func (cow Cow) foodNeeding() int {
-	return cow.weight * cow.needingFood
+func (c cow) foodNeeding() int {
+	return c.weight * c.needingFood
 }
 
-func (cow Cow) String() string {
-	return fmt.Sprintf("The weight of the %v is %vkg. ", cow.animalType, cow.weight)
+func (c cow) String() string {
+	return fmt.Sprintf("The weight of the %v is %vkg. ", c.animalType, c.weight)
 }
 
-func (cow Cow) animalTypeGetter() string {
-	return cow.animalType
+func (c cow) animalTypeGetter() string {
+	return c.animalType
 }
 
-func (cow Cow) minWeightGetter() int {
+func (c cow) minWeightGetter() int {
 	return cowMinWeight
 }
 
-func (cow Cow) animalWeightGetter() int {
-	return cow.weight
+func (c cow) animalWeightGetter() int {
+	return c.weight
 }
 
-func (cow Cow) isAnimalEdible() bool {
+func (c cow) isAnimalEdible() bool {
 	return isCowEdible
 }
 
-func (cow Cow) edibleStatus() bool {
-	return cow.isEdible
+func (c cow) edibleStatus() bool {
+	return c.isEdible
 }
 
 func validAnimalType(animal farmController) error {
-	var err error
 	animalType := reflect.TypeOf(animal).Name()
 	if animal.animalTypeGetter() != animalType {
-		err = fmt.Errorf("%s can`t be %s", animalType, animal.animalTypeGetter())
+		return fmt.Errorf("%s can`t be %s", animalType, animal.animalTypeGetter())
 	}
-	return err
+	return nil
 }
 
 func validAnimalWeight(animal farmController) error {
-	var err error
 	if animal.minWeightGetter() > animal.animalWeightGetter() {
-		err = fmt.Errorf("Minimum weight of this type of animal is %vkg. Weight of the animal is %vkg", animal.minWeightGetter(), animal.animalWeightGetter())
+		return fmt.Errorf("Minimum weight of this type of animal is %vkg. Weight of the animal is %vkg", animal.minWeightGetter(), animal.animalWeightGetter())
 	}
-	return err
+	return nil
 }
 
 func validIsAnimalEdible(animal farmController) error {
-	var err error
 	if animal.edibleStatus() != animal.isAnimalEdible() {
-		err = fmt.Errorf("Mistake of edible status. Edible status of %v is %v", animal.animalTypeGetter(), animal.isAnimalEdible())
+		return fmt.Errorf("Mistake of edible status. Edible status of %v is %v", animal.animalTypeGetter(), animal.isAnimalEdible())
 	}
-	return err
+	return nil
 }
 
 func validFarm(farm []farmController) error {
 	var err error
 	for _, v := range farm {
-		err = validAnimalType(v)
-		if err != nil {
-			err = fmt.Errorf("Type validation failed: %w", err)
-			return err
+		
+		if err = validAnimalType(v); err != nil {
+			return fmt.Errorf("Type validation failed: %w", err)
 		}
-		err = validAnimalWeight(v)
-		if err != nil {
-			err = fmt.Errorf("Weight validation failed: %w", err)
-			return err
+		
+		if err = validAnimalWeight(v); err != nil {
+			return fmt.Errorf("Weight validation failed: %w", err)
 		}
-		err = validIsAnimalEdible(v)
-		if err != nil {
-			err = fmt.Errorf("Edible validation failed: %w", err)
-			return err
+		
+		if err = validIsAnimalEdible(v); err != nil {
+			return fmt.Errorf("Edible validation failed: %w", err)
 		}
 	}
 	return nil
@@ -186,26 +180,26 @@ func main()  {
 	var totalNeedingFood int
 
 	animalFarm := []farmController {
-		Dog{
-			animalType : "Dog",
+		dog{
+			animalType : "dog",
 			weight : 10,
 			needingFood : dogEating,
 			// isEdible : false,
 		},
-		Cat{
-			animalType : "Cat",
+		cat{
+			animalType : "cat",
 			weight : 5,
 			needingFood : catEating,
 			// isEdible : false,
 		},
-		Dog{
-			animalType : "Dog",
+		dog{
+			animalType : "dog",
 			weight : 4,
 			needingFood : catEating,
 			// isEdible : false,
 		},
-		Cow{
-			animalType : "Cow",
+		cow{
+			animalType : "cow",
 			weight : 98,
 			needingFood : cowEating,
 			isEdible : true,
@@ -216,8 +210,8 @@ func main()  {
 		
 		err := validFarm(animalFarm)
 		if err != nil {
-		fmt.Println(err)
-		return
+			fmt.Println(err)
+			return
 		}
 
 		totalNeedingFood += a.foodNeeding()
